@@ -25,7 +25,7 @@ public class Main {
         FileStorage fileStorage= new FileStorage("file.csv");
         fileStorage.save(collection);
 //        collection=fileStorage.load();
-//        System.out.println(collection.get(11222).getId());
+        System.out.println(collection.get(11222).getId());
         Scanner output = new Scanner(System.in);
         while(true){
             System.out.print("> ");

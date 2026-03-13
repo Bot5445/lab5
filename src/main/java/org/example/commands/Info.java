@@ -1,25 +1,39 @@
-package org.example.Commands;
+package org.example.commands;
 
-import org.example.Data.Person;
+import org.example.data.Person;
 
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Map.Entry;
 
-public class Show extends Command implements ICommand {
 
-    private TreeMap<Integer, Person> coll;
+import static java.lang.String.format;
 
-    public Show(TreeMap<Integer, Person> coll) {
+/**
+ * Выводит в стандартный поток вывода все элементы коллекции в строковом представлении
+ */
+public class Info implements ICommand {
+
+    private final Map<Integer, Person> coll;
+
+    public Info(Map<Integer, Person> coll) {
         this.coll = coll;
     }
 
     @Override
-    public void execute() {
-        System.out.println("-".repeat(10)+"Persons"+"-".repeat(10));
-        for (Map.Entry<Integer, Person> x: coll.entrySet()) {
-            System.out.printf("%-5s  |  %-5s%n", x.getKey(), x.getValue().getName());
+    public String getName() {
+        return "info";
+    }
+
+    @Override
+    public String execute() {
+        StringBuilder str= new StringBuilder();
+
+        str.append("-".repeat(10)+"Persons"+"-".repeat(10)+"\n");
+        for (Entry<Integer, Person> x: coll.entrySet()) {
+            str.append(format("%-5s  |  %-5s%n", x.getKey(), x.getValue().getName()));
         }
-        System.out.println("-".repeat(27)+"\n");
+        str.append("-".repeat(27)).append("\n");
+        return str.toString();
     }
 
     @Override

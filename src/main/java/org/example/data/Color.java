@@ -1,4 +1,4 @@
-package Data;
+package org.example.data;
 
 public enum Color {
     RED,

@@ -1,8 +1,10 @@
-package IOStorage;
+package org.example.ioStorage;
+
+import org.example.data.Person;
 
 import java.util.Map;
 
 public interface IStorage {
-    void load(Map<String, String> x);
-    void save(Map<String, String> x);
+    Map<Integer, Person> load();
+    void save(Map<Integer, Person> x);
 }

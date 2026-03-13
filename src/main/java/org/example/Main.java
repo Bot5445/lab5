@@ -8,14 +8,12 @@ import org.example.data.Person;
 import org.example.ioStorage.FileStorage;
 
 
-import java.util.HashMap;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.Map;
 
 public class Main {
 
-    private static final Map<Integer, Person> collection = new TreeMap<>();//String? может T<>
     private static final CommandContainer commands = new CommandContainer();
 
     public static void main(String[] args) {

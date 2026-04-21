@@ -2,73 +2,79 @@ package org.example.ioStorage;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
+import org.example.data.PersonFactory;
 import org.example.data.Person;
 
 import java.io.*;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Scanner;
-import java.util.TreeMap;
+import java.nio.file.AccessDeniedException;
+import java.text.ParseException;
+import java.util.*;
 
 public class FileStorage implements IStorage{
-    private final String fileCSV;
 
-    public FileStorage(String fileCSV) {
-        this.fileCSV = fileCSV;
+    private String fileName;
+
+    public void setFileName(String fileName) {
+        if (fileName.contains(".")){
+            if (!fileName.endsWith(".csv")){
+                fileName = fileName + ".csv";
+            }else {
+                fileName = fileName;
+            }
+        }
+        this.fileName = fileName;
     }
 
-    public Map<Integer, Person> load() {
-        Map<Integer, Person> DataFile = new TreeMap<>();
-        String str = null;
+    public FileStorage() {
+        this.fileName = "file.csv";
+    }
 
+    public FileStorage(String fileCSV) {
+        fileName =fileCSV+".csv";
+    }
+    @Override
+    public List<Person> load() throws IllegalArgumentException {
+        List<Person> people = new ArrayList<>();
         CSVParser parser = new CSVParserBuilder()
                 .withSeparator(',')
                 .build();
 
-        try (var file = new Scanner(new File(fileCSV))
-        ) {
+        try (var file = new Scanner(new File(fileName))) {
+            StringJoiner errorString = new StringJoiner("\n");
             while (file.hasNextLine()) {
                 String line = file.nextLine();
                 if (line.trim().isEmpty()) continue;
+
                 String[] parts = parser.parseLine(line);
-
-
-//                System.out.println(Arrays.toString(parts));
-//                String[] split = line.split(", ",2);
-                // TODO use openCSV or anything
-
-//                DataFile.put(Integer.valueOf(split[0]), split[1]);??2
-//                System.out.println(Arrays.toString(split));
-
+                try {
+                    Person person = PersonFactory.createFromStringArray(parts);
+                    people.add(person);
+                    //TODO сделать вывод ошибки
+                } catch (IllegalArgumentException e) {
+                    errorString.add(e.getMessage());
+                }
+                System.err.println(errorString);
             }
-
-        } catch (IOException e) {
-            System.out.println("-".repeat(9) + "\n!!!Файл не найден!!!\n" + "-".repeat(9));
+        } catch (FileNotFoundException e) {
+            throw new IllegalArgumentException("Файл не найден: " + fileName, e);
+        } catch (IOException | ParseException e) {
+            throw new IllegalArgumentException("Ошибка загрузки файла: " + e.getMessage());
         }
-        return DataFile;
+        return people;
     }
-
-    public void save(Map<Integer, Person> persons) {
-        try {
-            //OutputStreamWriter file = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(fileCSV)));
-            BufferedOutputStream bufferOut = new BufferedOutputStream(new FileOutputStream("file2.csv"));
-            String row;
-
-            for (Entry<Integer, Person> entry : persons.entrySet()) {
-                row = String.valueOf(entry.getValue().toString() + "\n");
+    @Override
+    public void save(Collection<Person> persons) throws IOException{
+        try (
+        BufferedOutputStream bufferOut = new BufferedOutputStream(new FileOutputStream(fileName))
+        ){
+            for (Person entry : persons) {
+                String row = entry.toString() + "\n";
                 bufferOut.write(row.getBytes());
             }
-            bufferOut.close();
+        } catch (AccessDeniedException e){
+            throw new IOException("Нет прав на запись: " + fileName, e);
         }
-        catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+
     }
-
 }
-// персон с ид 1
-// имя апапапа
-// возраст 22
-
-// 1;john;22

@@ -2,9 +2,12 @@ package org.example.ioStorage;
 
 import org.example.data.Person;
 
-import java.util.Map;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 public interface IStorage {
-    Map<Integer, Person> load();
-    void save(Map<Integer, Person> x);
+    void setFileName(String fileName);
+    List<Person> load() throws Exception;
+    void save(Collection<Person> persons) throws IOException;
 }

@@ -2,69 +2,99 @@ package org.example;
 
 import org.example.commands.*;
 
-import org.example.data.Coordinates;
-import org.example.data.Location;
-import org.example.data.Person;
+import org.example.data.ICollManager;
+import org.example.data.CollectionManager;
 import org.example.ioStorage.FileStorage;
+import org.example.ioStorage.IStorage;
 
 
-import java.util.Scanner;
-import java.util.TreeMap;
-import java.util.Map;
+import java.util.*;
 
 public class Main {
 
-    private static final CommandContainer commands = new CommandContainer();
+    private static final Map<String, ICommand> commands = new HashMap<>();
+
 
     public static void main(String[] args) {
-        collection.put(11222, new Person("qwe", new Coordinates(), 56L, new Location(2, 5.7d)));
-        collection.put(11292, new Person("qwe1", new Coordinates(), 56L, new Location(2, 5.7d)));
+//        collection.put(11222, new Person("qwe", new Coordinates(), 56L, new Location(2, 5.7d)));
+//        collection.put(11292, new Person("qwe1", new Coordinates(), 56L, new Location(2, 5.7d)));
 
-
-        registrationCommands();
-        FileStorage fileStorage= new FileStorage("file.csv");
-        fileStorage.save(collection);
+//        try {
+//            IStorage fileStorage= new FileStorage();
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
 //        collection=fileStorage.load();
-        System.out.println(collection.get(11222).getId());
-        Scanner output = new Scanner(System.in);
-        while(true){
-            System.out.print("> ");
-            String line= output.nextLine();
-            if (line.isEmpty()) continue;
-            String[] tokens = line.split(" ");
+        ICollManager collManager = new CollectionManager();
+        IStorage storage = new FileStorage();
+        Scanner scanner = new Scanner(System.in);
 
-//            if ()
-            ICommand cmd = commands.getCommands().get(tokens[0].toLowerCase());
-            if (cmd == null) continue;
+        CommandExecutor executor = new CommandExecutor(Main.commands, scanner);
+        ICommand[] cmds = new ICommand[] {
+                new Show(collManager),
+                new Info(collManager),
+                new Insert(collManager),
+                new Update(collManager),
+                new RemoveKey(collManager),
+                new Clear(collManager),
+//                new Load(collManager, storage),
+                new Save(collManager, storage),
+                new Exit(),
+                new SumOfHeight(collManager),
+                new FilterContainsPassportID(collManager),
+                new FilterStartsWithName(collManager),
+                new ExecuteScript(executor),
+                new RemoveKey(collManager),
+                new RemoveLower(collManager),
+                new RemoveLowerKey(collManager),
+                new ReplaceIfGreater(collManager),
+                new Help(Main.commands)
+        };
+        for (ICommand cmd : cmds) Main.commands.put(cmd.getName(), cmd);
+        // Добавляем Help отдельно, если он не был добавлен через массив, или просто добавляем в массив.
+        // В данном случае new Help(commands) уже добавит сам себя, если посмотреть код Help,
+        // но безопаснее добавить через put:
+        boolean exit = false;
 
-            System.out.println(cmd.execute());
-
-
-
+        //загрузка данных из файла перед работой
+        try {
+            System.out.print(new Load(collManager, storage).execute(null));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-//        while (output.hasNext()) {
-//            System.out.print("> ");
-//            String line = output.nextLine();
-//
-//            command.execute();
-//        }
-    }
-    private static void registrationCommands(){
-//        static final class CommandContainer {
-//            //хранит команды (название: ссылка)
-//
-//            private static Map<String, ICommand> commands = new HashMap<>();
-//
-//            public static Map<String, ICommand> getCommands() {
-//                return commands;
+
+        while(!exit){
+            System.out.print("> ");
+
+            if (!scanner.hasNextLine()) {// Проверка на (Ctrl+D / Ctrl+Z)
+                System.out.println("\nПоток ввода закрыт. Завершение работы...");
+                break;
+            }
+            String strInput = PersonInputReader.cleinerStr(scanner.nextLine());
+            if (strInput.isEmpty()) continue;
+
+
+            try {
+                String strOutput = executor.execute(strInput);
+
+                if (strOutput == null) continue; // Пустой ввод
+                else if ("exit".equals(strOutput)) {
+                    exit = true;
+                } else {
+                    System.out.println(strOutput);
+                }
+            }
+//            catch (NoSuchElementException e) {
+//                System.out.println("\n[EOF] Ввод завершён.");
+//                break;
 //            }
-//
-//            public void register(ICommand command) {
-//                commands.put(command.getName(), command);
-//            }
-//        }
-        commands.register(new Help(commands));
-        commands.register(new Show(collection));
-        commands.register(new Info(collection));
+            catch (IllegalArgumentException e) {
+                System.out.println("Ошибка данных: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Критическая ошибка: " + e.getMessage());
+            }
+        }
+        scanner.close();
+        System.out.println("\nВвод завершён.");
     }
 }

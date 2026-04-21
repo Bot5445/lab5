@@ -2,17 +2,18 @@ package org.example.data;
 
 import java.io.Serializable;
 
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
-import static java.lang.Math.abs;
-
 @Getter
+@AllArgsConstructor
 public final class Person implements Serializable {
-
+    //    @Id
+    //    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private final String name; //Поле не может быть null, Строка не может быть пустой
     private final Coordinates coordinates; //Поле не может быть null
@@ -25,32 +26,19 @@ public final class Person implements Serializable {
     private Color hairColor; //Поле может быть null
     @Setter
     private Country nationality; //Поле может быть null
+    @NonNull
     private final Location location; //Поле не может быть null
 
-    public Person(String name, Coordinates coordinates, Long height, Location location) {
-        this.id = abs((new Random()).nextInt());
+    public Person(Integer id, String name, Coordinates coordinates, Long height, Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("Location не может быть null");
+        }
+        this.id = id; //abs((new Random()).nextInt())
         this.name = name;
         this.coordinates = coordinates;
         this.creationDate = new Date();
         this.height = height;
         this.location = location;
-    }
-
-    public Person(Integer id, String name, Coordinates coordinates, Date creationDate, Long height, String passportID, Color hairColor, Country nationality, Location location) {
-        this.id = id;
-        this.name = name;
-        this.coordinates = coordinates;
-        this.creationDate = creationDate;
-        this.height = height;
-        this.passportID = passportID;
-        this.hairColor = hairColor;
-        this.nationality = nationality;
-        this.location = location;
-    }
-
-
-    public static String[] ToStrings(){
-        return new String[]{"id", "name", "coordinates", };
     }
 
     @Override
@@ -63,10 +51,29 @@ public final class Person implements Serializable {
         if (this.nationality != null) {
             nationality = this.nationality.toString();
         }
+        // Используем PersonFactory для форматирования даты
+        String dateStr = PersonFactory.formatDate(this.creationDate);
 
         return id.toString() + "," + name + "," + coordinates.toString() + ","
-                + creationDate.toString()+ ","+ hairColor + "," + nationality + "," + location.toString();
-        // collectionManager
+                + dateStr + ","+ height.toString()+","+passportID +","
+                + hairColor + "," + nationality + "," + location;
+    }
+    /**
+     * @return  все поля Person
+     */
+    public static String[] getHeaders(){
+//        return new String[]{"id", "name", Coordinates.toStringsArray()[0], Coordinates.toStringsArray()[1], "creationDate", "height", "passportID", "hairColor", "nationality", "location"};
+        return concat(
+            new String[]{"id", "name"},
+            Coordinates.toStrings(),
+            new String[]{"creationDate", "height", "passportID", "hairColor", "nationality"},
+            Location.toStrings());
+    }
+
+    private static String[] concat(String[]... arrays) {
+        return Arrays.stream(arrays)
+                .flatMap(Arrays::stream)
+                .toArray(String[]::new);
     }
 }
 

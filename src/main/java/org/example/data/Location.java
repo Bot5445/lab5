@@ -1,7 +1,6 @@
 package org.example.data;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 public class Location {
@@ -18,4 +17,11 @@ public class Location {
         return x+","+y+","+name;
     }
 
+    public static String[] toStrings() {
+        String[] str= new String[3];
+        str[0] = "Location: " + 'x';
+        str[1] = "Location: " + 'y';
+        str[2] = "Location: " + "name";
+        return str;
+    }
 }

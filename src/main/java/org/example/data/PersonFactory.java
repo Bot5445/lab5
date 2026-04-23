@@ -104,7 +104,9 @@ public class PersonFactory {
 //            throw new IllegalArgumentException("В столбце Height: "+e.getMessage());
 //        }
 
-        String passportID = (str[6] != null && str[6].trim().equalsIgnoreCase("null")) ? null : str[6].trim();
+        String passportID = (str[6] == null || str[6].isBlank() || str[6].trim().equalsIgnoreCase("null"))
+                ? null
+                : str[6].trim();
 
         Color hairColor = parseEnum(Color.class, str[7]);
         Country nationality = parseEnum(Country.class, str[8]);

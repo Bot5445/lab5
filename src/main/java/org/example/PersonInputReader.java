@@ -23,9 +23,7 @@ public class PersonInputReader {
      */
     public String readPersonData(String args) {
         StringJoiner dataStr = new StringJoiner(",");
-
         Queue<String> argQueue = new LinkedList<>();
-
 
         if (args != null && !args.isBlank()) {
             Collections.addAll(argQueue, args.split("[,\\s]+"));
@@ -49,12 +47,13 @@ public class PersonInputReader {
                 isNumber(Long::parseLong, h -> h > 0), "-"));
 
         // 5. PassportID (Nullable)
-        dataStr.add(readNextArgOrPrompt(argQueue, "PassportID (пусто = null)", isPassportId()));
+        String passID = readNextArgOrPrompt(argQueue, "PassportID (пусто = null)", isPassportId());
+        dataStr.add(passID.isEmpty() ? null : passID);
         // 8. Enum Цвет
-        dataStr.add(readFieldEnum("Цвет волос", Color.class));
+        dataStr.add(readFieldEnum("Цвет волос (пусто = null)", Color.class));
 
         // 9. Enum Страна
-        dataStr.add(readFieldEnum("Национальность", Country.class));
+        dataStr.add(readFieldEnum("Национальность (пусто = null)", Country.class));
 
         // 10-12. Локация
         dataStr.add(readField("Локация X (long)", isNumber(Long::parseLong), "-"));
@@ -79,14 +78,20 @@ public class PersonInputReader {
         while (true) {
             System.out.print(prompt + ": ");
             String rawInput = scanner.nextLine();  // сохраняем "как ввёл"
-            String cleaned = cleinerStr(rawInput, formatNumber);
-
-            if (validator.test(cleaned)) {
-                return cleaned;
+            // 1. Передаем в валидатор "сырую" строку (с обрезкой пробелов по краям).
+            // Валидатор сам выведет правильную ошибку с исходным текстом.
+            if (validator.test(rawInput.trim())) {
+                // 2. Если валидация прошла успешно, очищаем строку для сохранения.
+                // (например, меняем запятую на точку)
+                return cleinerStr(rawInput, formatNumber);
             }
-
-            // Показываем, что именно было введено и почему не подошло
-//            System.out.println("Неверный формат: \"" + rawInput.trim() + "\". Попробуйте снова.");
+            // Если валидация не прошла, валидатор уже вывел ошибку. Повторяем цикл.
+//
+//            String cleaned = cleinerStr(rawInput, formatNumber);
+//
+//            if (validator.test(cleaned)) {
+//                return cleaned;
+//            }
         }
     }
 
@@ -113,9 +118,10 @@ public class PersonInputReader {
                                        Predicate<String> validator, String formatNumber) {
         if (!argQueue.isEmpty()) {
             String val = argQueue.poll();
-            String cleaned = cleinerStr(val, formatNumber); // ← очищаем с учётом формата
-            if (validator.test(val)) {
-                return cleaned;
+
+//            String cleaned = cleinerStr(val, formatNumber); // ← очищаем с учётом формата
+            if (validator.test(val.trim())) {
+                return cleinerStr(val, formatNumber);
             }
             // Если аргумент был, но он невалиден, мы не падаем, а переспрашиваем у пользователя (или можно выбросить ошибку)
             System.out.println("Значение для \"" + prompt + "\" не правильно. Требуется ручной ввод.");
@@ -174,14 +180,20 @@ public class PersonInputReader {
 
             String normalized = s.trim().replace(',', '.');
 
-            // 1️ Сначала проверяем формат строки
+            // 1Сначала проверяем формат строки
             if (!isValidNumberFormat(normalized, allowDecimal)) {
-                System.out.println("Неверный формат числа: \"" + s.trim() + "\". " +
-                        "Используйте только цифры и точку (.).");
+                // Динамическое сообщение об ошибке
+                String hint;
+                if (allowDecimal) {
+                    hint = "Используйте только цифры, точку (.) и знак минус (-) в начале.";
+                } else {
+                    hint = "Используйте только целые цифры (точка не допускается).";
+                }
+                System.out.println("Неверный формат числа: \"" + s.trim() + "\". " + hint);
                 return false;
             }
 
-            // 2 Только потом пытаемся распарсить
+            //  Парсинг и проверка условий
             try {
                 T value = parser.apply(normalized);
                 if (!condition.test(value)) {
@@ -228,10 +240,10 @@ public class PersonInputReader {
     public static String cleinerStr(String input, String formatNumber) {
         if (input == null) return null;
 
-        // 1. Нормализация десятичного разделителя: запятая → точка
+        // Нормализация десятичного разделителя: запятая → точка
         String normalized = input.replace(',', '.');
 
-        // 2. Экранируем спецсимволы для безопасной вставки в класс символов []
+        // Экранируем спецсимволы для безопасной вставки в класс символов []
         // Точка и дефис имеют спец.значение в регексе, поэтому экранируем их
         String safeFormat = formatNumber.replaceAll("([.\\-\\[\\]^\\\\])", "\\\\$1");
 
@@ -243,6 +255,7 @@ public class PersonInputReader {
                 .trim()                                   // обрезаем края
                 .replaceAll("\\s+", " ");                 // схлопываем множественные пробелы
     }
+
     private static <T extends Number> Predicate<String> isNumberWithMessage(
         Function<String, T> parser,
         Predicate<T> condition,

@@ -36,13 +36,20 @@ public class ExecuteScript implements ICommand {
      */
     @Override
     public String execute(String args) throws Exception {
-        StringJoiner str = new StringJoiner("\n");
+        if (args == null || args.trim().isEmpty()) {
+            return "Ошибка: укажите имя файла.";
+        }
 
-        // 1. Проверка на рекурсию ПЕРЕД открытием файла
+        // Проверка расширения файла
+        if (!args.toLowerCase().endsWith(".txt")) {
+            return "Ошибка: можно запускать только скрипты с расширением .txt";
+        }
+        // Проверка на рекурсию ПЕРЕД открытием файла
         if (runningFiles.contains(args)) {
             return "Ошибка: Обнаружена рекурсия! Файл \"" + args + "\" уже выполняется.";
         }
-
+        StringJoiner str = new StringJoiner("\n");
+        // открытие файла
         try (Scanner file = new Scanner(new File(args))) {
             // Регистрируем файл как запущенный
             runningFiles.add(args);

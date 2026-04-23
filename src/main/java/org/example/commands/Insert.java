@@ -5,6 +5,7 @@ import org.example.data.Person;
 import org.example.data.PersonFactory;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Добавляет новый элемент с заданным ключом

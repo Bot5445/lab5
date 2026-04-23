@@ -59,14 +59,8 @@ public class PersonInputReader {
         // 10-12. Локация
         dataStr.add(readField("Локация X (long)", isNumber(Long::parseLong), "-"));
         dataStr.add(readField("Локация Y (double)", isDouble(y -> true), ".-"));
-        dataStr.add(readField("Название локации (пусто = null)",  s -> {
-            try {
-                PersonFactory.validateAndParseName(s);
-                return true;
-            } catch (Exception e) {
-                return false;
-            }
-        }));
+        String locName = readField("Название локации (пусто = null)", s -> true);
+        dataStr.add(locName.isEmpty() ? "null" : locName);
 
         return dataStr.toString();
     }
@@ -91,8 +85,8 @@ public class PersonInputReader {
                 return cleaned;
             }
 
-            // 👇 Показываем, что именно было введено и почему не подошло
-            System.out.println("Неверный формат: \"" + rawInput.trim() + "\". Попробуйте снова.");
+            // Показываем, что именно было введено и почему не подошло
+//            System.out.println("Неверный формат: \"" + rawInput.trim() + "\". Попробуйте снова.");
         }
     }
 
@@ -142,11 +136,12 @@ public class PersonInputReader {
         String prompt = fieldName + " (доступно: " + availableValues + ")";
 
         Predicate<String> enumValidator = s -> {
-            if (s == null || s.isEmpty()) return true; // Nullable
+            if (s == null || s.isEmpty()) return true;
             try {
                 Enum.valueOf(enumClass, s.toUpperCase());
                 return true;
             } catch (IllegalArgumentException e) {
+                System.out.println("Неверный формат числа: \""+s+"\". Выберите из списка: " + availableValues);
                 return false;
             }
         };
@@ -160,6 +155,7 @@ public class PersonInputReader {
                 PersonFactory.validateAndParseName(cleinerStr(s));
                 return true;
             } catch (Exception e) {
+                System.out.println(e.getMessage());
                 return false;
             }
         };
@@ -181,7 +177,7 @@ public class PersonInputReader {
             // 1️ Сначала проверяем формат строки
             if (!isValidNumberFormat(normalized, allowDecimal)) {
                 System.out.println("Неверный формат числа: \"" + s.trim() + "\". " +
-                        "Используйте только цифры, точку (.) и знак минус (-) в начале.");
+                        "Используйте только цифры и точку (.).");
                 return false;
             }
 
@@ -298,8 +294,10 @@ public class PersonInputReader {
     private static Predicate<String> isPassportId() {
         return s -> {
             if (s == null || s.isBlank()) return true; // пустота = null
-            // Пример: только латиница и цифры, длина 1-32 символа
-            return s.trim().matches("^[A-Za-z0-9]{1,32}$");
+            if (s.trim().matches("^[A-Za-z0-9]{1,32}$")) return true;
+
+            System.out.println("PassportID должен содержать только латиницу и цифры (1-32 символа).");
+            return false;
         };
     }
 }

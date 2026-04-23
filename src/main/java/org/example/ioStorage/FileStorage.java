@@ -19,8 +19,6 @@ public class FileStorage implements IStorage{
         if (fileName.contains(".")){
             if (!fileName.endsWith(".csv")){
                 fileName = fileName + ".csv";
-            }else {
-                fileName = fileName;
             }
         }
         this.fileName = fileName;

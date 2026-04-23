@@ -4,6 +4,8 @@ import org.example.data.ICollManager;
 import org.example.data.Person;
 import org.example.data.PersonFactory;
 
+import java.util.Arrays;
+
 /**
  * Удаляет из коллекции все элементы, меньшие, чем заданный
  */
@@ -34,9 +36,17 @@ public class RemoveLower implements ICommand{
         }
 
         try {
-            // Создаем временный объект для сравнения
-            Person template = PersonFactory.createFromStringArray(args.split(","));
+            // 1. Создаем шаблон объекта из введенных данных
+            String[] fullValues = args.split(",", -1);
+            int expectedLength = Person.getHeaders().length;
+            if (fullValues.length < expectedLength) {
+                fullValues = Arrays.copyOf(fullValues, expectedLength);
+            }
 
+            Person template = PersonFactory.createFromStringArray(fullValues);
+
+            // 2. Удаляем элементы меньше шаблона
+            // (CollectionManager сравнивает по ID, если там нет другой логики)
             int removedCount = collectionManager.removeLower(template);
 
             return "Удалено элементов: " + removedCount;
@@ -51,5 +61,10 @@ public class RemoveLower implements ICommand{
     @Override
     public String getDescription() {
         return "удаляет из коллекции все элементы, меньшие, чем заданный";
+    }
+
+    @Override
+    public boolean requiresCompoundDataInput() {
+        return true;
     }
 }

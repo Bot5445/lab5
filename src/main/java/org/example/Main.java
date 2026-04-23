@@ -29,7 +29,7 @@ public class Main {
         IStorage storage = new FileStorage();
         Scanner scanner = new Scanner(System.in);
 
-        CommandExecutor executor = new CommandExecutor(Main.commands, scanner);
+        CommandExecutor executor = new CommandExecutor(commands, scanner);
         ICommand[] cmds = new ICommand[] {
                 new Show(collManager),
                 new Info(collManager),
@@ -43,14 +43,14 @@ public class Main {
                 new SumOfHeight(collManager),
                 new FilterContainsPassportID(collManager),
                 new FilterStartsWithName(collManager),
-                new ExecuteScript(executor),
+                new ExecuteScript(executor, commands),
                 new RemoveKey(collManager),
                 new RemoveLower(collManager),
                 new RemoveLowerKey(collManager),
                 new ReplaceIfGreater(collManager),
-                new Help(Main.commands)
+                new Help(commands)
         };
-        for (ICommand cmd : cmds) Main.commands.put(cmd.getName(), cmd);
+        for (ICommand cmd : cmds) commands.put(cmd.getName(), cmd);
         // Добавляем Help отдельно, если он не был добавлен через массив, или просто добавляем в массив.
         // В данном случае new Help(commands) уже добавит сам себя, если посмотреть код Help,
         // но безопаснее добавить через put:
@@ -70,8 +70,8 @@ public class Main {
                 System.out.println("\nПоток ввода закрыт. Завершение работы...");
                 break;
             }
-            String strInput = PersonInputReader.cleinerStr(scanner.nextLine());
-            if (strInput.isEmpty()) continue;
+            String strInput = scanner.nextLine();// PersonInputReader.cleinerStr(scanner.nextLine());
+            if (strInput == null || strInput.trim().isEmpty()) continue;
 
 
             try {

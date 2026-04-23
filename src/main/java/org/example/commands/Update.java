@@ -62,4 +62,12 @@ public class Update implements ICommand{
     public String getDescription() {
         return "обновить значение поля элемента по ID";
     }
+
+    /**
+     * @return
+     */
+    @Override
+    public boolean requiresCompoundDataInput() {
+        return true;
+    }
 }

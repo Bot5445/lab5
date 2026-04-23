@@ -37,7 +37,7 @@ public class PersonFactory {
         String name = input.trim();
         // Разрешаем латиницу, дефис и символ &
         if (!name.matches("^[a-zA-Z&\\-]+$")) {
-            throw new IllegalArgumentException("Имя должно содержать только латиницу, дефис и символ &");
+            throw new IllegalArgumentException("Имя \""+name+"\" должно содержать только латиницу, дефис и символ &");
         }
         return name;
     }
@@ -111,8 +111,9 @@ public class PersonFactory {
 
         long locX = Long.parseLong(str[9].trim());
         double locY = Double.parseDouble(str[10].trim());
-        String locName = (str[11] != null && str[11].trim().equalsIgnoreCase("null")) ? null : str[11].trim();
-
+        String locName = (str[11] == null || str[11].isBlank() || str[11].trim().equalsIgnoreCase("null"))
+                ? null
+                : str[11].trim();
         Location location = new Location(locX, locY);
         location.setName(locName);
 

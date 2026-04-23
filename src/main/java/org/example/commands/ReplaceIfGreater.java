@@ -2,7 +2,10 @@ package org.example.commands;
 
 import org.example.data.ICollManager;
 import org.example.data.Person;
+import org.example.data.PersonFactory;
 import org.example.data.PersonFieldUpdater;
+
+import java.util.Arrays;
 
 /**
  * Заменяет значение по ключу, если новое значение больше старого
@@ -29,40 +32,40 @@ public class ReplaceIfGreater implements ICommand{
      */
     @Override
     public String execute(String args) throws Exception {
-        String[] arg= args.split(" ", 3); // Делим на 3 части: id, field, value
-        if (args == null || arg.length == 2) {
-            return "Ошибка ввода: необходимо указать ID и параметр=значение. Использование: \"update id param value\"";
+        if (args == null || args.isEmpty()) {
+            return "Ошибка: данные не были предоставлены. Сначала укажите ID.";
         }
 
         try {
+            // 1. Разбираем данные (ID + остальные поля)
+            String[] fullValues = args.split(",", -1);
+            int expectedLength = Person.getHeaders().length;
+            if (fullValues.length < expectedLength) {
+                fullValues = Arrays.copyOf(fullValues, expectedLength);
+            }
 
-            int id = Integer.parseInt(arg[0]);
-            String fieldName = arg[1]; // название переменной
-            String newValue = arg[2]; // значение переменной
+            // 2. Извлекаем ID (он идет первым)
+            int id = Integer.parseInt(fullValues[0]);
 
-            if (!collectionManager.containsId(id)) return "Элемент с ID " + id + " не найден.";
+            if (!collectionManager.containsId(id)) {
+                return "Элемент с ID " + id + " не найден.";
+            }
 
-
-            // Получаем старый объект и превращаем его в массив строк
+            // 3. Создаем объекты для сравнения
+            Person newPerson = PersonFactory.createFromStringArray(fullValues);
             Person oldPerson = collectionManager.getPersonById(id);
 
-            // Получаем старое значение
-            String oldValueStr = PersonFieldUpdater.getFieldValue(oldPerson, fieldName);
-
-            // Сравниваем (предполагаем, что числа)
-            double oldVal = Double.parseDouble(oldValueStr);
-            double newVal = Double.parseDouble(newValue);
-
-            if (newVal > oldVal) {
-                Person updatedPerson = PersonFieldUpdater.updateField(oldPerson, fieldName, newValue);
-                collectionManager.addPerson(updatedPerson);
-                return "Значение заменено.";
+            // 4. Сравниваем (например, по росту)
+            // Если рост нового больше роста старого -> заменяем
+            if (newPerson.getHeight() > oldPerson.getHeight()) {
+                collectionManager.addPerson(newPerson);
+                return "Значение заменено. Новый рост (" + newPerson.getHeight() + ") больше старого (" + oldPerson.getHeight() + ").";
             } else {
-                return "Новое значение не больше старого.";
+                return "Замена не требуется. Новый рост (" + newPerson.getHeight() + ") не больше старого (" + oldPerson.getHeight() + ").";
             }
 
         } catch (NumberFormatException e) {
-            return "Ошибка: ID должен быть числом.";
+            return "Ошибка формата числа: " + e.getMessage();
         } catch (Exception e) {
             return "Ошибка при обновлении: " + e.getMessage();
         }
@@ -74,5 +77,10 @@ public class ReplaceIfGreater implements ICommand{
     @Override
     public String getDescription() {
         return "заменяет значение по ключу, если новое значение больше старого";
+    }
+
+    @Override
+    public boolean requiresCompoundDataInput() {
+        return true;
     }
 }

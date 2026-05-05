@@ -4,18 +4,24 @@ import org.example.data.IGetterSetter;
 import org.example.data.Person;
 
 /**
- * Выводит элементы, значение поля name которых начинается с заданной подстроки
+ * Команда для фильтрации элементов коллекции по префиксу имени.
+ * Выводит элементы, значение поля name которых начинается с заданной подстроки.
  */
 public class FilterStartsWithName implements ICommand {
 
     private final IGetterSetter collectionManager;
 
+    /**
+     * Создает команду фильтрации по имени.
+     * @param collectionManager менеджер коллекции для доступа к данным
+     */
     public FilterStartsWithName(IGetterSetter collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
-     * @return название
+     * Возвращает название команды.
+     * @return строка "filter_starts_with_name"
      */
     @Override
     public String getName() {
@@ -23,8 +29,11 @@ public class FilterStartsWithName implements ICommand {
     }
 
     /**
-     * @param args префикс имени person
-     * @return элементы, значение поля name которых начинается с заданной подстроки
+     * Выполняет поиск элементов, имя которых начинается с указанного префикса.
+     * Префикс не должен содержать цифр.
+     * @param args префикс строки для поиска в имени
+     * @return строка с найденными элементами или сообщение об ошибке/отсутствии результатов
+     * @throws Exception при ошибке доступа к коллекции
      */
     @Override
     public String execute(String args) throws Exception {
@@ -52,7 +61,8 @@ public class FilterStartsWithName implements ICommand {
     }
 
     /**
-     * @return описание
+     * Возвращает описание команды для справки.
+     * @return текстовое описание команды
      */
     @Override
     public String getDescription() {

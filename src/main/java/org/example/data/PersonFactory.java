@@ -21,6 +21,12 @@ public class PersonFactory {
         DATE_FORMAT.setLenient(false);
     }
 
+    /**
+     * Проверяет и парсит строку в ID (Integer).
+     * @param input строковое представление ID (может быть "null")
+     * @return распарсенное положительное число или null, если входная строка пустая/"null"
+     * @throws IllegalArgumentException если строка не является числом или число <= 0
+     */
     public static Integer validateAndParseId(String input) throws IllegalArgumentException {
         if (input == null || input.trim().isEmpty() || input.equalsIgnoreCase("null")) return null;
         try {
@@ -32,6 +38,13 @@ public class PersonFactory {
         }
     }
 
+    /**
+     * Проверяет и парсит имя.
+     * Имя должно содержать только латиницу, дефис и символ &.
+     * @param input строка с именем
+     * @return валидированная строка имени
+     * @throws IllegalArgumentException если имя пустое или содержит недопустимые символы
+     */
     public static String validateAndParseName(String input) throws IllegalArgumentException {
         if (input == null || input.trim().isEmpty()) throw new IllegalArgumentException("Имя не может быть пустым");
         String name = input.trim();
@@ -42,6 +55,13 @@ public class PersonFactory {
         return name;
     }
 
+    /**
+     * Парсит значение Enum из строки без учета регистра.
+     * @param enumClass класс Enum-а
+     * @param str строковое представление значения
+     * @return соответствующий элемент Enum или null, если строка пустая
+     * @throws IllegalArgumentException если строка не соответствует ни одному значению Enum
+     */
     public static <E extends Enum<E>> E parseEnum(Class<E> enumClass, String str) throws IllegalArgumentException {
         if (str == null || str.trim().isEmpty() || str.equalsIgnoreCase("null")) return null;
         try {
@@ -71,6 +91,13 @@ public class PersonFactory {
         }
     }
 
+    /**
+     * Парсит строку в Float с проверкой на пустоту.
+     * @param input строковое значение
+     * @param fieldName имя поля для сообщения об ошибке
+     * @return число Float
+     * @throws NumberFormatException если строка пуста или не является числом
+     */
     public static Float parseFloat(String input, String fieldName) throws NumberFormatException {
         if (input == null || input.trim().isEmpty())
             throw new NumberFormatException(fieldName + " не может быть пустым");
@@ -78,10 +105,12 @@ public class PersonFactory {
     }
 
     /**
-     * ввод от пользователя insert Name Height [Passport]
-     * опрос пользователя на ввод данных: CoordX CoordY [Color] [Country] LocX LocY [LocName]
-     * @param str данные в формате CSV
-     * @return Person
+     * Создает объект Person из массива строк (CSV формата).
+     * Массив должен содержать поля в порядке: ID, Name, CoordX, CoordY, Date, Height, PassportID, HairColor, Nationality, LocX, LocY, LocName.
+     * @param str массив строковых данных
+     * @return созданный объект Person
+     * @throws IllegalArgumentException если данные невалидны
+     * @throws ParseException если формат даты неверен
      */
     public static Person createFromStringArray(String[] str) throws IllegalArgumentException, ParseException {
         Integer id = validateAndParseId(str[0]);
@@ -98,11 +127,6 @@ public class PersonFactory {
         Date creationDate = parseDate(str[4]);
 
         Long height = Long.parseLong(str[5].trim());
-//        try {
-//            height = Long.valueOf(str[5].trim());
-//        } catch (NumberFormatException e) {
-//            throw new IllegalArgumentException("В столбце Height: "+e.getMessage());
-//        }
 
         String passportID = (str[6] == null || str[6].isBlank() || str[6].trim().equalsIgnoreCase("null"))
                 ? null
@@ -123,13 +147,16 @@ public class PersonFactory {
                 id, name,
                 new Coordinates(x, y),
                 creationDate, height, passportID,
-                hairColor, nationality,
+                nationality, hairColor,
                 location
         );
     }
 
     /**
-     * Метод для форматирования даты при сохранении в файл (используется в Person.toString())
+     * Форматирует дату в строку формата dd.MM.yyyy.
+     * Используется при сохранении объекта в файл.
+     * @param date объект даты
+     * @return строковое представление или "null"
      */
     public static String formatDate(Date date) {
         if (date == null) return "null";

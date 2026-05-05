@@ -11,15 +11,22 @@ import java.util.List;
 /**
  * Удалить из коллекции все элементы, ключ которых меньше, чем заданный
  */
-public class RemoveLowerKey implements ICommand{
+public class RemoveLowerKey implements ICommand {
     private final ICollManager collectionManager;
 
+    /**
+     * Создает команду удаления элементов с ключами меньше заданного.
+     *
+     * @param collectionManager менеджер коллекции, предоставляющий доступ к операциям удаления
+     */
     public RemoveLowerKey(ICollManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
-     * @return remove_lower_key
+     * Возвращает название команды.
+     *
+     * @return строка "remove_lower_key"
      */
     @Override
     public String getName() {
@@ -27,9 +34,9 @@ public class RemoveLowerKey implements ICommand{
     }
 
     /**
-     * @param args аргументы
-     * @return количество удаленных Person
-     * @throws Exception если не число
+     * @param args строка формата "имя_поля пороговое_значение" (например, "height 170")
+     * @return количество удаленных элементов или сообщение об ошибке
+     * @throws Exception если произошла ошибка при парсинге или обращении к полю
      */
     @Override
     public String execute(String args) throws Exception {
@@ -89,7 +96,8 @@ public class RemoveLowerKey implements ICommand{
                     if (val < threshold) {
                         idsToRemove.add(p.getId());
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
             for (Integer id : idsToRemove) {
                 collectionManager.deletePerson(id);
@@ -106,7 +114,8 @@ public class RemoveLowerKey implements ICommand{
     }
 
     /**
-     * @return описание
+     * Возвращает описание команды для справки.
+     * @return текстовое описание команды
      */
     @Override
     public String getDescription() {

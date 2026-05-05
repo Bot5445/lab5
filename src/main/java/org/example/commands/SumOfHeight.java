@@ -4,17 +4,22 @@ import org.example.data.IGetterSetter;
 import org.example.data.Person;
 
 /**
- * Выводит сумму значений поля height для всех элементов коллекции
+ * Команда для вывода суммы значений поля height для всех элементов коллекции.
  */
 public class SumOfHeight implements ICommand{
     private final IGetterSetter collectionManager;
 
+    /**
+     * Создает команду подсчета суммы роста.
+     * @param collectionManager менеджер коллекции для доступа к данным
+     */
     public SumOfHeight(IGetterSetter collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
-     * @return название
+     * Возвращает название команды.
+     * @return строка "sum_of_height"
      */
     @Override
     public String getName() {
@@ -22,7 +27,10 @@ public class SumOfHeight implements ICommand{
     }
 
     /**
-     * @return сумму значений поля height для всех элементов коллекции
+     * Вычисляет и возвращает сумму значений поля height всех объектов в коллекции.
+     * @param args аргументы команды (не используются)
+     * @return строковое представление суммы роста всех элементов
+     * @throws Exception в случае ошибки доступа к данным
      */
     @Override
     public String execute(String args) throws Exception {
@@ -34,7 +42,8 @@ public class SumOfHeight implements ICommand{
     }
 
     /**
-     * @return описание
+     * Возвращает описание команды для справки.
+     * @return текстовое описание команды
      */
     @Override
     public String getDescription() {

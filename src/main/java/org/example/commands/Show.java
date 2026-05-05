@@ -3,66 +3,129 @@ package org.example.commands;
 import org.example.data.ICollManager;
 import org.example.data.Person;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringJoiner;
 
 /**
- * Выводит в стандартный поток вывода все элементы коллекции в строковом представлении
+ * Команда для вывода всех элементов коллекции в виде форматированной таблицы.
+ * Если коллекция пуста, выводит соответствующее сообщение.
  */
 public class Show implements ICommand {
     private final ICollManager collectionManager;
 
+    /**
+     * Создает команду вывода содержимого коллекции.
+     * @param collectionManager менеджер, предоставляющий доступ к коллекции
+     */
     public Show(ICollManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
-     * @return название
+     * Возвращает название команды.
+     * @return строка "show"
      */
     @Override
     public String getName() {
         return "show";
     }
 
+    /**
+     * Выполняет формирование и вывод таблицы элементов.
+     * Метод определяет ширину колонок динамически на основе заголовков и данных,
+     * ограничивая максимальную ширину для удобства чтения.
+     * @param args аргументы команды (не используются в данной реализации)
+     * @return строка с отформатированной таблицей или сообщение о том, что коллекция пуста
+     */
     @Override
     public String execute(String args) {
         if (collectionManager.isEmpty()) return "Коллекция пустая";
 
-        StringJoiner str= new StringJoiner("\n");
+        StringJoiner str = new StringJoiner("\n");
+        String[] headers = Person.getHeaders();
+        int numCols = headers.length;
+        int maxColWidth = 22; // Максимальная ширина колонки
 
-        // 2. Определяем формат строки (как в printf)
-        String[] headerPerson=Person.getHeaders();
-       int[] colLength = {12,15,15, 15, 30, 10, 10,10,15,15,15,15};         // | %-5s | %-15s | %10s |
-        String rowFormat="|";
-        for (int i:colLength) {
-            rowFormat+=" %-"+i+"s |";
-        }
-//        String rowFormat ="| %-"+colLength[0]+"s | %-"+colLength[1]+"s |"+("%-"+colLength[2]+"s |").repeat(headerPerson.length-2);
-
-        // 3. Создаем шапку таблицы
-        String header = String.format(rowFormat, (Object[]) headerPerson);
-        str.add(header);
-
-        // Строим массив строк-разделителей, соответствующий количеству колонок
-        String[] dashes = new String[headerPerson.length];
-        for (int i = 0; i < headerPerson.length; i++) {
-            dashes[i] = "-".repeat(colLength[i]);      // для ширины 10
-        }
-        String separator = String.format(rowFormat, (Object[]) dashes);
-        str.add(separator);
-
+        // Собираем все строки данных
+        List<String[]> rows = new ArrayList<>();
         for (Person person : collectionManager.getAllPersons()) {
-            String[] rowData= person.toString().split(",");
-            str.add(String.format(rowFormat, (Object[]) rowData));// Автоматически выведет: Person(id=1, name=Ivan, coordinates=..., ...)
+            String[] rowData = person.toString().split(",", -1);
+            if (rowData.length < numCols) {
+                rowData = java.util.Arrays.copyOf(rowData, numCols);
+            }
+            rows.add(rowData);
         }
-        return  str.toString();
 
+        // Вычисляем ширину каждой колонки по реальным данным
+        int[] colWidth = new int[numCols];
+        for (int i = 0; i < numCols; i++) {
+            colWidth[i] = headers[i].length();
+            for (String[] row : rows) {
+                if (i < row.length) {
+                    colWidth[i] = Math.max(colWidth[i], row[i].trim().length());
+                }
+            }
+            // Ограничиваем максимальную ширину
+            colWidth[i] = Math.min(colWidth[i], maxColWidth);
+        }
+
+        // Строим форматную строку: | %-12s | %-15s | ...
+        StringBuilder fmtBuilder = new StringBuilder("|");
+        for (int w : colWidth) {
+            fmtBuilder.append(" %-").append(w).append("s |");
+        }
+        String rowFormat = fmtBuilder.toString();
+
+        // Функция обрезки длинных значений
+        // (лямбда для финальной переменной)
+        int maxW = maxColWidth;
+
+        // Шапка
+        String[] displayHeaders = new String[numCols];
+        for (int i = 0; i < numCols; i++) {
+            displayHeaders[i] = truncate(headers[i], maxW);
+        }
+        str.add(String.format(rowFormat, (Object[]) displayHeaders));
+
+        // Разделитель
+        String[] dashes = new String[numCols];
+        for (int i = 0; i < numCols; i++) {
+            dashes[i] = "-".repeat(colWidth[i]);
+        }
+        str.add(String.format(rowFormat, (Object[]) dashes));
+
+        // Строки данных
+        for (String[] row : rows) {
+            String[] displayRow = new String[numCols];
+            for (int i = 0; i < numCols; i++) {
+                String val = (i < row.length) ? row[i].trim() : "";
+                displayRow[i] = truncate(val, maxW);
+            }
+            str.add(String.format(rowFormat, (Object[]) displayRow));
+        }
+
+        return str.toString();
     }
 
     /**
-     * @return описание
+     * Обрезает строку до указанной длины, добавляя многоточие «…» на конце, если строка длиннее.
+     * @param s исходная строка
+     * @param maxLength максимальная допустимая длина строки
+     * @return обрезанная строка или исходная, если её длина в пределах нормы
+     */
+    private String truncate(String s, int maxLength) {
+        if (s == null) return "";
+        if (s.length() <= maxLength) return s;
+        return s.substring(0, maxLength - 1) + "…";
+    }
+
+    /**
+     * Возвращает описание команды для справки.
+     * @return текстовое описание команды
      */
     @Override
     public String getDescription() {
-        return "выводит в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.)";
+        return "выводит все элементы коллекции в строковом представлении";
     }
 }

@@ -5,16 +5,25 @@ import java.util.Map.Entry;
 
 import static java.lang.String.format;
 
+/**
+ * Команда для вывода справки по всем доступным командам приложения.
+ * Динамически формирует список на основе переданного реестра команд.
+ */
 public class Help implements ICommand {
     //    private CommandExecutor executor;
     private final Map<String, ICommand> cmds;
 
+    /**
+     * Создает команду помощи.
+     * @param cmds отображение названий команд на их реализации
+     */
     public Help(Map<String, ICommand> cmds) {
         this.cmds = cmds;
     }
 
     /**
-     * @return название
+     * Возвращает название команды.
+     * @return строка "help"
      */
     @Override
     public String getName() {
@@ -22,7 +31,9 @@ public class Help implements ICommand {
     }
 
     /**
-     * @return список всех команд
+     * Формирует и возвращает список всех команд с их описаниями.
+     * @param args аргументы (не используются)
+     * @return отформатированный список команд
      */
     @Override
     public String execute(String args) {
@@ -36,7 +47,8 @@ public class Help implements ICommand {
     }
 
     /**
-     * @return описание
+     * Возвращает описание команды для справки.
+     * @return текстовое описание команды
      */
     @Override
     public String getDescription() {

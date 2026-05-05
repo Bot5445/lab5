@@ -8,6 +8,10 @@ import org.example.data.IGetterSetter;
 public class Clear implements ICommand {
     private final IGetterSetter collectionManager;
 
+    /**
+     * Создает команду очистки коллекции.
+     * @param collectionManager менеджер коллекции, который будет очищен
+     */
     public Clear(IGetterSetter collectionManager) {
         this.collectionManager = collectionManager;
     }

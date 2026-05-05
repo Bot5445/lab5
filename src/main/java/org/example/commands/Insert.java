@@ -8,17 +8,22 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * Добавляет новый элемент с заданным ключом
+ * Добавляет новый элемент {@link Person} в коллекцию.
  */
 public class Insert implements ICommand{
     private final ICollManager collectionManager;
 
+    /**
+     * Создает команду вставки.
+     * @param collectionManager менеджер коллекции
+     */
     public Insert(ICollManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
-     * @return название
+     * Возвращает имя команды.
+     * @return строка "insert"
      */
     @Override
     public String getName() {
@@ -26,26 +31,13 @@ public class Insert implements ICommand{
     }
 
     /**
-     * @param args
-     * @return
+     * Создает и добавляет объект Person на основе полученных данных.
+     * Если данные неполные, недостающие поля заполняются значениями по умолчанию (null).
+     * @param args CSV-строка с данными объекта (формат: id,name,coordX,coordY,height...)
+     * @return сообщение об успешном добавлении с указанием ID или текст ошибки валидации
      */
     @Override
     public String execute(String args) {
-
-//            String[] fullValues = args.split(",", -1);
-
-//            String idStr = fullValues[0];
-//            if (idStr != null && !idStr.isBlank() && !idStr.equalsIgnoreCase("null")) {
-//                try {
-//                    long id = Long.parseLong(idStr);
-//                    if (collectionManager.containsKey(id)) {
-//                        return "Ошибка: Элемент с ID " + id + " уже существует.";
-//                    }
-//                } catch (NumberFormatException e) {
-//                    return "Ошибка: ID должен быть числом.";
-//                }
-//            }
-
         if (args == null || args.isEmpty()) {
             return "Ошибка: данные не были предоставлены.";
         }
@@ -90,7 +82,8 @@ public class Insert implements ICommand{
     }
 
     /**
-     * @return описание
+     * Возвращает описание команды для справки.
+     * @return текстовое описание
      */
     @Override
     public String getDescription() {
@@ -100,8 +93,8 @@ public class Insert implements ICommand{
     }
 
     /**
-     * Чтобы начать опрос пользователя
-     * @return true
+     * Указывает, что для выполнения команды требуется интерактивный ввод данных объекта.
+     * @return true, так как команда требует ввода составного объекта
      */
     @Override
     public boolean requiresCompoundDataInput() { return true; }

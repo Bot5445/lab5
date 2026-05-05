@@ -3,16 +3,17 @@ package org.example.data;
 import java.text.ParseException;
 
 /**
- *
+ * Утилитный класс для динамического обновления и получения значений полей объекта {@link Person} по их названию.
  */
 public class PersonFieldUpdater {
 
     /**
-     * Обновляет поле объекта Person.
-     * @param oldPerson старый объект
-     * @param fieldName имя поля (например, "name")
-     * @param newValue новое значение в виде строки
+     * Обновляет указанное поле объекта новым значением.
+     * @param oldPerson исходный объект
+     * @param fieldName название поля (например, "height", "name")
+     * @param newValue строковое представление нового значения
      * @return новый объект Person с обновленным полем
+     * @throws IllegalArgumentException если поле не найдено или значение невалидно
      */
     public static Person updateField(Person oldPerson, String fieldName, String newValue) throws ParseException {
         // Превращаем человека в массив строк (как это было в командах)
@@ -46,7 +47,11 @@ public class PersonFieldUpdater {
     }
 
     /**
-     * Получает текущее значение поля в виде строки (нужно для ReplaceIfGreater)
+     * Получает строковое представление значения указанного поля объекта.
+     * @param person объект Person
+     * @param fieldName название поля
+     * @return строковое значение поля
+     * @throws IllegalArgumentException если поле не существует
      */
     public static String getFieldValue(Person person, String fieldName) {
         // Аналогичная логика поиска индекса, но возврат значения

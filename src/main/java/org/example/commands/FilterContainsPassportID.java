@@ -4,17 +4,23 @@ import org.example.data.IGetterSetter;
 import org.example.data.Person;
 
 /**
- * Выводит элементы, значение поля passportID которых содержит заданную подстроку
+ * Команда для фильтрации элементов коллекции по подстроке в поле passportID.
+ * Выводит элементы, значение поля passportID которых содержит заданную подстроку.
  */
 public class FilterContainsPassportID implements ICommand {
     private final IGetterSetter collectionManager;
 
+    /**
+     * Создает команду фильтрации по passportID.
+     * @param collectionManager менеджер коллекции для доступа к данным
+     */
     public FilterContainsPassportID(IGetterSetter collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
-     * @return название
+     * Возвращает название команды.
+     * @return строка "filter_contains_passport_i_d"
      */
     @Override
     public String getName() {
@@ -22,8 +28,11 @@ public class FilterContainsPassportID implements ICommand {
     }
 
     /**
-     * @param args аргумент по которому происходит фильтрация
-     * @return элементы, значение поля passportID которых содержит заданную подстроку
+     * Выполняет поиск элементов, passportID которых содержит указанную подстроку.
+     * Аргумент должен состоять только из цифр (пробелы игнорируются).
+     * @param args подстрока для поиска в passportID
+     * @return строка с найденными элементами или сообщение об ошибке/отсутствии результатов
+     * @throws Exception при ошибке доступа к коллекции
      */
     @Override
     public String execute(String args) throws Exception {
@@ -52,7 +61,8 @@ public class FilterContainsPassportID implements ICommand {
     }
 
     /**
-     * @return описание
+     * Возвращает описание команды для справки.
+     * @return текстовое описание команды
      */
     @Override
     public String getDescription() {

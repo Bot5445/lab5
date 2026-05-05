@@ -9,17 +9,26 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * Утилитный класс для пошагового (интерактивного) чтения данных объекта из консоли.
+ * Преобразует введенные пользователем данные в CSV-строку для передачи в команду.
+ */
 public class PersonInputReader {
     private final Scanner scanner;
 
+    /**
+     * Создает ридер ввода данных.
+     * @param scanner сканер консоли для чтения пользовательского ввода
+     */
     public PersonInputReader(Scanner scanner) {
         this.scanner = scanner;
     }
 
     /**
-     * Формирует данные Person в формате CSV.
-     * @param args Строка с аргументами (может быть null). Если не null, поля заполняются из неё с пропуском интерактивного ввода.
-     * @return CSV строка с данными Person.
+     * Запускает интерактивный опрос пользователя для заполнения полей Person.
+     * @param args начальные аргументы (если были введены в строке с командой),
+     *                    могут быть использованы как первые значения. Если null, опрос начинается с первого поля.
+     * @return CSV-строка со всеми заполненными полями
      */
     public String readPersonData(String args) {
         StringJoiner dataStr = new StringJoiner(",");
@@ -180,9 +189,8 @@ public class PersonInputReader {
 
             String normalized = s.trim().replace(',', '.');
 
-            // 1Сначала проверяем формат строки
+            // проверяем формат строки
             if (!isValidNumberFormat(normalized, allowDecimal)) {
-                // Динамическое сообщение об ошибке
                 String hint;
                 if (allowDecimal) {
                     hint = "Используйте только цифры, точку (.) и знак минус (-) в начале.";
@@ -196,6 +204,16 @@ public class PersonInputReader {
             //  Парсинг и проверка условий
             try {
                 T value = parser.apply(normalized);
+
+                if (value instanceof Float fl && (Float.isInfinite(fl) || Float.isNaN(fl))) {
+                    System.out.println("Значение \"" + s.trim() + "\" слишком большое.");
+                    return false;
+                }
+                if (value instanceof Double db && (Double.isInfinite(db) || Double.isNaN(db))) {
+                    System.out.println("Значение \"" + s.trim() + "\" слишком большое.");
+                    return false;
+                }
+
                 if (!condition.test(value)) {
                     System.out.println("Значение \"" + s.trim() + "\" не удовлетворяет условию (например, должно быть > 0).");
                     return false;
@@ -256,29 +274,6 @@ public class PersonInputReader {
                 .replaceAll("\\s+", " ");                 // схлопываем множественные пробелы
     }
 
-    private static <T extends Number> Predicate<String> isNumberWithMessage(
-        Function<String, T> parser,
-        Predicate<T> condition,
-        String fieldName) {
-
-        return s -> {
-            if (s == null || s.isBlank()) {
-                System.out.println("Поле \"" + fieldName + "\" не может быть пустым.");
-                return false;
-            }
-            try {
-                T value = parser.apply(s.trim());
-                if (!condition.test(value)) {
-                    System.out.println("Значение \"" + s + "\" не удовлетворяет условию (например, должно быть > 0).");
-                    return false;
-                }
-                return true;
-            } catch (NumberFormatException e) {
-                System.out.println("\"" + s + "\" не является корректным числом.");
-                return false;
-            }
-        };
-    }
     /**
      * Проверяет, является ли строка корректным числом в формате:
      * [-]цифры[.цифры] или [-].цифры

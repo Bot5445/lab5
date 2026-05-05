@@ -7,19 +7,26 @@ import org.example.ioStorage.IStorage;
 import java.util.List;
 
 /**
- * Загружает файл, можно указать имя файла загрузки
+ * Загружает текущую коллекцию в файл через реализацию {@link IStorage}.
+ * Позволяет указать новое имя файла для загрузки.
  */
 public class Load implements ICommand{
     private final IGetterSetter collectionManager;
     private final IStorage storage;
 
+    /**
+     * Создает команду загрузки.
+     * @param collectionManager менеджер коллекции, в который будут загружены данные
+     * @param storage объект хранилища для чтения файла
+     */
     public Load(IGetterSetter collectionManager, IStorage storage) {
         this.collectionManager = collectionManager;
         this.storage = storage;
     }
 
     /**
-     * @return название
+     * Возвращает название команды.
+     * @return строка "load"
      */
     @Override
     public String getName() {
@@ -27,7 +34,10 @@ public class Load implements ICommand{
     }
 
     /**
-     * @return количество person загруженных из файла
+     * Загружает коллекцию из файла и обновляет данные в менеджере.
+     * @param args аргументы (не используются в текущей реализации)
+     * @return статус выполнения загрузки с количеством элементов
+     * @throws Exception при ошибке чтения файла или парсинга данных
      */
     @Override
     public String execute(String args) throws Exception {
@@ -40,7 +50,8 @@ public class Load implements ICommand{
     }
 
     /**
-     * @return описание
+     * Возвращает описание команды для справки.
+     * @return текстовое описание
      */
     @Override
     public String getDescription() {

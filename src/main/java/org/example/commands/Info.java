@@ -7,19 +7,24 @@ import org.example.data.Person;
 import static java.lang.String.format;
 
 /**
- * Выводит в стандартный поток вывода все элементы коллекции в строковом представлении
+ * Команда для вывода информации о коллекции.
+ * Выводит список всех элементов в стандартный поток вывода (ID и Имя).
  */
-
 public class Info implements ICommand {
 
     private final ICollManager collectionManager;
 
+    /**
+     * Создает команду информации о коллекции.
+     * @param collectionManager менеджер коллекции
+     */
     public Info(ICollManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
-     * @return название
+     * Возвращает название команды.
+     * @return строка "info"
      */
     @Override
     public String getName() {
@@ -27,7 +32,10 @@ public class Info implements ICommand {
     }
 
     /**
-     * @return ID и имя person
+     * Выводит таблицу с ID и именами всех элементов коллекции.
+     * Если коллекция пуста, возвращает соответствующее сообщение.
+     * @param args аргументы (не используются)
+     * @return строка с таблицей элементов или сообщение о пустоте
      */
     @Override
     public String execute(String args) {
@@ -44,7 +52,8 @@ public class Info implements ICommand {
     }
 
     /**
-     * @return описание
+     * Возвращает описание команды для справки.
+     * @return текстовое описание команды
      */
     @Override
     public String getDescription() {

@@ -5,17 +5,22 @@ import org.example.data.Person;
 import org.example.data.PersonFieldUpdater;
 
 /**
-* Обновляет значение элемента коллекции, id которого равен заданному
-* */
+ * Команда для обновления значения конкретного поля элемента коллекции по его ID.
+ */
 public class Update implements ICommand{
     private final ICollManager collectionManager;
 
+    /**
+     * Создает команду обновления элемента.
+     * @param collectionManager менеджер коллекции, предоставляющий доступ к данным
+     */
     public Update(ICollManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
-     * @return название
+     * Возвращает название команды.
+     * @return строка "update"
      */
     @Override
     public String getName() {
@@ -23,9 +28,12 @@ public class Update implements ICommand{
     }
 
     /**
-     * @param args данные person
-     * @return обнавлены ли поля
-     * @throws Exception неверный ID
+     * Выполняет обновление поля объекта.
+     * Ожидает аргументы в формате: "ID имя_поля новое_значение".
+     * Если элемент с указанным ID существует, создает его копию с обновленным полем.
+     * @param args строка с аргументами, разделенными пробелами (ID, имя поля, значение)
+     * @return сообщение об успешном обновлении или текст ошибки
+     * @throws Exception если произошла ошибка при поиске элемента или обновлении поля
      */
     @Override
     public String execute(String args) throws Exception {
@@ -56,7 +64,8 @@ public class Update implements ICommand{
     }
 
     /**
-     * @return описание
+     * Возвращает описание команды для справки.
+     * @return текстовое описание команды
      */
     @Override
     public String getDescription() {
@@ -64,7 +73,10 @@ public class Update implements ICommand{
     }
 
     /**
-     * @return
+     * Указывает, что команда требует ввода сложных данных.
+     * Возвращает true, что сигнализирует о необходимости интерактивного ввода
+     * или специальной обработки аргументов.
+     * @return true
      */
     @Override
     public boolean requiresCompoundDataInput() {

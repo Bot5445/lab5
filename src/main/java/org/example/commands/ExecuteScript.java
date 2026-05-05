@@ -16,6 +16,11 @@ public class ExecuteScript implements ICommand {
     private final CommandExecutor executor; // Внедряем executor
     private final Map<String,ICommand> commands;
 
+    /**
+     * Создает команду выполнения скрипта.
+     * @param executor исполняющий объект для запуска команд из скрипта
+     * @param commands мапа доступных команд для проверки на требования интерактивного ввода
+     */
     public ExecuteScript(CommandExecutor executor, Map<String, ICommand> commands) {
         this.executor = executor;
         this.commands = commands;
@@ -30,9 +35,12 @@ public class ExecuteScript implements ICommand {
     }
 
     /**
-     * @param args имя файла
-     * @return ошибку работа с файлом
-     * @throws Exception ошибка
+     * Построчно читает файл, игнорируя комментарии (начинающиеся с #),
+     * и выполняет команды. Команды, требующие интерактивного ввода ({@link ICommand#requiresCompoundDataInput()}),
+     * пропускаются. Ошибка в одной команде не прерывает выполнение скрипта.
+     * @param args путь к файлу скрипта (обязательно с расширением .txt)
+     * @return лог выполнения команд и их результатов
+     * @throws Exception при ошибках ввода-вывода
      */
     @Override
     public String execute(String args) throws Exception {
@@ -83,17 +91,20 @@ public class ExecuteScript implements ICommand {
                         continue;
                     }
 
-                    String strOutput = executor.execute(strInput);
-
-                    if (strOutput != null) {
-                        str.add(strOutput);
-                        if ("exit".equals(strOutput)) break;
+                    try {
+                        String strOutput = executor.execute(strInput);
+                        if (strOutput != null) {
+                            str.add(strOutput);
+                            if ("exit".equals(strOutput)) break;
+                        }
+                    } catch (Exception e) {
+                        // Ошибка в одной команде не ломает весь скрипт
+                        str.add("Ошибка: " + e.getMessage());
                     }
                 }
                 return str.toString();
             } finally {
-                // 4. ГАРАНТИРОВАННО удаляем файл из списка активных после выполнения
-                // Это позволяет запускать скрипт повторно после завершения
+                // удаление файла из списка после выполнения, для повторного запуска скрипта после завершения
                 runningFiles.remove(args);
             }
         } catch (FileNotFoundException e) {

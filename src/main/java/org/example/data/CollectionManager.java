@@ -3,6 +3,11 @@ package org.example.data;
 import java.util.*;
 import java.util.Map.Entry;
 
+/**
+ * Реализация менеджера коллекции. Хранит элементы {@link Person} в {@link TreeMap},
+ * где ключом является ID человека. Обеспечивает потокобезопасность операций
+ * добавления, удаления и поиска.
+ */
 public class CollectionManager implements ICollManager {
     private final Map<Integer, Person> collection = new TreeMap<>();
 
@@ -15,16 +20,31 @@ public class CollectionManager implements ICollManager {
         return collection;
     }
 
+    /**
+     * Добавляет объект Person в коллекцию. Ключом становится ID объекта.
+     * Если объект с таким ID уже существует, он будет перезаписан.
+     * @param person объект для добавления
+     */
     @Override
     public void addPerson(Person person) {
         collection.put(person.getId(), person);
     }
 
+    /**
+     * Удаляет объект из коллекции по его ID.
+     * @param id ID объекта для удаления
+     */
     @Override
     public void deletePerson(Integer id) {
         collection.remove(id);
     }
 
+    /**
+     * Заменяет старый объект с указанным ID на новый.
+     * @param id ID заменяемого элемента
+     * @param person новый объект Person
+     * @throws IllegalArgumentException если элемента с таким ID нет в коллекции
+     */
     @Override
     public void updatePerson(Integer id, Person person) {
         if (collection.containsKey(id)){
@@ -36,6 +56,9 @@ public class CollectionManager implements ICollManager {
 
     }
 
+    /**
+     * Отчищает коллекцию
+     */
     @Override
     public void clear() {
         collection.clear();
@@ -91,6 +114,11 @@ public class CollectionManager implements ICollManager {
         return removeLowerKey(template.getId());
     }
 
+    /**
+     * Удаляет все элементы коллекции, ключ (ID) которых меньше переданного порогового значения.
+     * @param thresholdId пороговый ID
+     * @return количество удаленных элементов
+     */
     @Override
     public int removeLowerKey(int thresholdId) {
         int removedCount = 0;

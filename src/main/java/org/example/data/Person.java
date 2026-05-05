@@ -9,26 +9,70 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+/**
+ * Главный объект данных, хранящийся в коллекции.
+ * Содержит информацию о человеке: координаты, рост, паспортные данные, цвет волос и локацию.
+ */
 @Getter
 @AllArgsConstructor
 public final class Person implements Serializable {
-    //    @Id
-    //    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
-    private final String name; //Поле не может быть null, Строка не может быть пустой
-    private final Coordinates coordinates; //Поле не может быть null
-    private final Date creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
-    private final Long height; //Поле не может быть null, Значение поля должно быть больше 0
+    // @Id
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    /**
+     * Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
+     */
+    private final Integer id;
+    /**
+     * Поле не может быть null, Строка не может быть пустой
+     */
+    private final String name;
+    /**
+     * Поле не может быть null
+     */
+    private final Coordinates coordinates;
+    /**
+     * Поле не может быть null, Значение этого поля должно генерироваться автоматически
+     */
+    private final Date creationDate;
+    /**
+     * Поле не может быть null, Значение поля должно быть больше 0
+     */
+    private final Long height;
 
+    /**
+     * Поле может быть null
+     */
     @Setter
-    private String passportID; //Поле может быть null
+    private String passportID;
+
+    /**
+     * Поле может быть null
+     */
     @Setter
-    private Color hairColor; //Поле может быть null
+    private Country nationality;
+    /**
+     * Поле может быть null
+     * */
     @Setter
-    private Country nationality; //Поле может быть null
+    private Color hairColor;
+
+    /**
+     * Поле не может быть null
+     */
     @NonNull
-    private final Location location; //Поле не может быть null
+    private final Location location;
 
+    /**
+     * Конструктор для создания объекта Person с основными параметрами.
+     * Дата создания устанавливается автоматически текущей.
+     * Поля passportID, nationality и hairColor инициализируются как null.
+     * @param id уникальный идентификатор
+     * @param name имя человека
+     * @param coordinates координаты
+     * @param height рост
+     * @param location местоположение
+     * @throws IllegalArgumentException если location равен null
+     */
     public Person(Integer id, String name, Coordinates coordinates, Long height, Location location) {
         if (location == null) {
             throw new IllegalArgumentException("Location не может быть null");
@@ -41,6 +85,11 @@ public final class Person implements Serializable {
         this.location = location;
     }
 
+    /**
+     * Возвращает строковое представление объекта в формате CSV.
+     * Значения null заменяются строкой "null".
+     * @return строка с полями объекта, разделенными запятыми
+     */
     @Override
     public String toString() {
         String hairColor = "null";
@@ -59,10 +108,10 @@ public final class Person implements Serializable {
                 + hairColor + "," + nationality + "," + location;
     }
     /**
-     * @return  все поля Person
-     */
+    * Возвращает массив заголовков всех полей класса для формирования шапки таблицы/CSV.
+    * @return массив имен полей
+    */
     public static String[] getHeaders(){
-//        return new String[]{"id", "name", Coordinates.toStringsArray()[0], Coordinates.toStringsArray()[1], "creationDate", "height", "passportID", "hairColor", "nationality", "location"};
         return concat(
             new String[]{"id", "name"},
             Coordinates.toStrings(),
@@ -70,6 +119,11 @@ public final class Person implements Serializable {
             Location.toStrings());
     }
 
+    /**
+     * Объединяет несколько массивов строк в один.
+     * @param arrays массивы строк для объединения
+     * @return объединенный массив строк
+     */
     private static String[] concat(String[]... arrays) {
         return Arrays.stream(arrays)
                 .flatMap(Arrays::stream)

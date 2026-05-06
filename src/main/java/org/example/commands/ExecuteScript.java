@@ -14,10 +14,11 @@ import java.util.*;
 public class ExecuteScript implements ICommand {
     private static Set<String> runningFiles = new HashSet<>();
     private final CommandExecutor executor; // Внедряем executor
-    private final Map<String,ICommand> commands;
+    private final Map<String, ICommand> commands;
 
     /**
      * Создает команду выполнения скрипта.
+     *
      * @param executor исполняющий объект для запуска команд из скрипта
      * @param commands мапа доступных команд для проверки на требования интерактивного ввода
      */
@@ -38,6 +39,7 @@ public class ExecuteScript implements ICommand {
      * Построчно читает файл, игнорируя комментарии (начинающиеся с #),
      * и выполняет команды. Команды, требующие интерактивного ввода ({@link ICommand#requiresCompoundDataInput()}),
      * пропускаются. Ошибка в одной команде не прерывает выполнение скрипта.
+     *
      * @param args путь к файлу скрипта (обязательно с расширением .txt)
      * @return лог выполнения команд и их результатов
      * @throws Exception при ошибках ввода-вывода

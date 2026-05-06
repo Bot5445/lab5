@@ -27,13 +27,14 @@ public class Main {
      * @param args аргументы командной строки (не используются)
      */
     public static void main(String[] args) {
-        ICollManager collManager = new CollectionManager();
 
+        //переменная окружения
+        FileStorage storageClass = new FileStorage( "file.csv");
         String filePath = System.getenv("LAB5_FILE");
-        if (filePath == null || filePath.isBlank()) {
-            filePath = "file.csv";
-        }
-        IStorage storage = new FileStorage();
+        if (!(filePath == null || filePath.isBlank())) storageClass.setFilePath(filePath);
+
+        IStorage storage = storageClass;
+        ICollManager collManager = new CollectionManager();
 
         Scanner scanner = new Scanner(System.in);
         CommandExecutor executor = new CommandExecutor(commands, scanner);

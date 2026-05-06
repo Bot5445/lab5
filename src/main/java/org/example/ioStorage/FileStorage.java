@@ -14,18 +14,20 @@ import java.util.*;
  * Реализация хранилища данных на основе CSV-файлов.
  * Предоставляет методы для сохранения и загрузки коллекции объектов {@link Person}.
  */
-public class FileStorage implements IStorage{
+public class FileStorage implements IStorage {
 
     private String fileName;
+    private String filePath;
 
     /**
      * Устанавливает имя файла для хранилища.
      * Если имя не содержит расширения, автоматически добавляет ".csv".
+     *
      * @param fileName имя файла (с путем или без)
      */
     public void setFileName(String fileName) {
-        if (fileName.contains(".")){
-            if (!fileName.endsWith(".csv")){
+        if (fileName.contains(".")) {
+            if (!fileName.endsWith(".csv")) {
                 fileName = fileName + ".csv";
             }
         }
@@ -41,16 +43,29 @@ public class FileStorage implements IStorage{
 
     /**
      * Создает объект FileStorage с указанным именем файла, добавляя расширение ".csv".
+     *
      * @param fileCSV имя файла без расширения
      */
     public FileStorage(String fileCSV) {
-        fileName =fileCSV+".csv";
+        if (fileCSV.endsWith(".csv")) fileName = fileCSV;
+        else fileName = fileCSV + ".csv";
+    }
+
+    /**
+     * Устанавливает путь к файлу
+     *
+     * @param filePath путь к файлу
+     */
+    public void setFilePath(String filePath) {
+        if (!filePath.endsWith("/")) this.filePath = filePath + "/";
+        else this.filePath = filePath;
     }
 
     /**
      * Загружает коллекцию объектов Person из CSV-файла.
      * Парсит файл построчно, игнорируя пустые строки.
      * Ошибки парсинга конкретных строк выводятся в стандартный поток ошибок (stderr).
+     *
      * @return список загруженных объектов Person
      * @throws IllegalArgumentException если файл не найден, или произошла критическая ошибка чтения/формата
      */
@@ -61,7 +76,7 @@ public class FileStorage implements IStorage{
                 .withSeparator(',')
                 .build();
 
-        try (var file = new Scanner(new File(fileName))) {
+        try (var file = new Scanner(new File(filePath + fileName))) {
             StringJoiner errorString = new StringJoiner("\n");
             while (file.hasNextLine()) {
                 String line = file.nextLine();
@@ -84,22 +99,24 @@ public class FileStorage implements IStorage{
         }
         return people;
     }
+
     /**
      * Сохраняет коллекцию объектов Person в CSV-файл.
      * Запись производится с использованием буферизации.
+     *
      * @param persons коллекция объектов для сохранения
      * @throws IOException если файл не найден, нет прав на запись или произошла ошибка ввода-вывода
      */
     @Override
-    public void save(Collection<Person> persons) throws IOException{
+    public void save(Collection<Person> persons) throws IOException {
         try (
-        BufferedOutputStream bufferOut = new BufferedOutputStream(new FileOutputStream(fileName))
-        ){
+                BufferedOutputStream bufferOut = new BufferedOutputStream(new FileOutputStream(filePath + fileName))
+        ) {
             for (Person entry : persons) {
                 String row = entry.toString() + "\n";
                 bufferOut.write(row.getBytes());
             }
-       }catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new IOException("Файл не найден или нет прав для записи: " + fileName);
         } catch (IOException e) {
             throw new IOException("Ошибка сохранения в " + fileName + ": " + e.getMessage());

@@ -56,7 +56,8 @@ public class Main {
                 new RemoveLower(collManager),
                 new RemoveLowerKey(collManager),
                 new ReplaceIfGreater(collManager),
-                new Help(commands)
+                new Help(commands),
+                new Load(collManager, storage)
         };
         for (ICommand cmd : cmds) commands.put(cmd.getName(), cmd);
 

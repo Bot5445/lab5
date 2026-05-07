@@ -17,7 +17,7 @@ import java.util.*;
 public class FileStorage implements IStorage {
 
     private String fileName;
-    private String filePath;
+    private String filePath = "";
 
     /**
      * Устанавливает имя файла для хранилища.
@@ -57,8 +57,13 @@ public class FileStorage implements IStorage {
      * @param filePath путь к файлу
      */
     public void setFilePath(String filePath) {
-        if (!filePath.endsWith("/")) this.filePath = filePath + "/";
-        else this.filePath = filePath;
+        filePath = filePath.trim();
+
+        if (!filePath.endsWith("/") && !filePath.endsWith("\\")) {
+            this.filePath = filePath + "/";
+        } else {
+            this.filePath = filePath;
+        }
     }
 
     /**
@@ -76,24 +81,24 @@ public class FileStorage implements IStorage {
                 .withSeparator(',')
                 .build();
 
-        try (var file = new Scanner(new File(filePath + fileName))) {
+        String fullPath = filePath + fileName;
+        try (Scanner scanner = new Scanner(new File(fullPath))) {
             StringJoiner errorString = new StringJoiner("\n");
-            while (file.hasNextLine()) {
-                String line = file.nextLine();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
                 if (line.trim().isEmpty()) continue;
 
                 String[] parts = parser.parseLine(line);
                 try {
                     Person person = PersonFactory.createFromStringArray(parts);
                     people.add(person);
-                    //TODO сделать вывод ошибки
                 } catch (IllegalArgumentException e) {
                     errorString.add(e.getMessage());
                 }
                 System.err.println(errorString);
             }
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("Файл не найден: " + fileName, e);
+            throw new IllegalArgumentException("Файл данных не найден (" + fullPath + "). Коллекция пуста.", e);
         } catch (IOException | ParseException e) {
             throw new IllegalArgumentException("Ошибка загрузки файла: " + e.getMessage());
         }

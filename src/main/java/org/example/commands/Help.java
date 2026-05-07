@@ -39,10 +39,20 @@ public class Help implements ICommand {
     public String execute(String args) {
         StringBuilder str = new StringBuilder();
         str.append("Список команд:\n");
-        for (Entry<String, ICommand> cmd : cmds.entrySet()) {
-            //комманда      - описание (ссылка..getDescription())
-            str.append(format("  %-10s - %s%n", cmd.getKey(), cmd.getValue().getDescription()));
-        }
+        // 1. Выводим команды БЕЗ нижнего подчеркивания (простые команды)
+        cmds.entrySet().stream()
+                .filter(entry -> !entry.getKey().contains("_"))
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> str.append(format("  %-25s - %s%n", entry.getKey(), entry.getValue().getDescription())));
+
+        str.append("\n"); // Пустая строка-разделитель
+
+        // 2. Выводим команды С нижним подчеркиванием (составные команды)
+        cmds.entrySet().stream()
+                .filter(entry -> entry.getKey().contains("_"))
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> str.append(format("  %-25s - %s%n", entry.getKey(), entry.getValue().getDescription())));
+
         return str.toString();
     }
 

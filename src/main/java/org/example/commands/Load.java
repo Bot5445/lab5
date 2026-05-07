@@ -1,10 +1,13 @@
 package org.example.commands;
 
+import org.example.data.CollectionManager;
 import org.example.data.IGetterSetter;
 import org.example.data.Person;
 import org.example.ioStorage.IStorage;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Загружает текущую коллекцию в файл через реализацию {@link IStorage}.
@@ -41,13 +44,31 @@ public class Load implements ICommand{
      */
     @Override
     public String execute(String args) throws Exception {
-        // Storage возвращает список
-        List<Person> loadedPeople = storage.load();
+    // Если указан аргумент - устанавливаем новое имя файла
 
+        if (args != null && !args.trim().isEmpty()) {
+        storage.setFileName(args.trim().replace("\"", ""));
+    }
+
+    // Загружаем список из файла
+    List<Person> loadedPeople = storage.load();
+
+    // Получаем текущую карту коллекции
+    // но getPerson() возвращает ссылку на саму Map.
+    Map<Integer, Person> currentCollection = collectionManager.getPerson();
+    if (currentCollection == null) {
         collectionManager.setPersons(loadedPeople);
-
         return "Коллекция загружена (" + loadedPeople.size() + " элементов)\n";
     }
+    // Объединяем
+    int count = 0;
+    for (Person p : loadedPeople) {
+        // put заменит элемент, если ID совпадает, или добавит новый
+        currentCollection.put(p.getId(), p);
+        count++;
+    }
+        return "Коллекция объединена с файлом. Обработано элементов: " + count + "\n";
+}
 
     /**
      * Возвращает описание команды для справки.

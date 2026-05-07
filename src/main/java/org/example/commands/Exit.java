@@ -27,4 +27,13 @@ public class Exit implements ICommand {
     public String getDescription() {
         return "завершает программу (без сохранения в файл)";
     }
+
+    /**
+     * Команда exit не принимает аргументов
+     * @return выводит false
+     */
+    @Override
+    public boolean acceptsArguments() {
+        return false;
+    }
 }

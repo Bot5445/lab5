@@ -65,5 +65,12 @@ public class Help implements ICommand {
         return "выводит справку по доступным командам";
     }
 
-
+    /**
+     * Команда help не принимает аргументов
+     * @return выводит false
+     */
+    @Override
+    public boolean acceptsArguments() {
+        return false;
+    }
 }

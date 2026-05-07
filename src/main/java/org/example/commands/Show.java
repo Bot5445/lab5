@@ -134,4 +134,13 @@ public class Show implements ICommand {
     public String getDescription() {
         return "выводит все элементы коллекции в строковом представлении";
     }
+
+    /**
+     * Команда show не принимает аргументов
+     * @return выводит false
+     */
+    @Override
+    public boolean acceptsArguments() {
+        return false;
+    }
 }

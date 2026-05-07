@@ -53,7 +53,6 @@ public class CollectionManager implements ICollManager {
         } else {
             throw new IllegalArgumentException("No id");
         }
-
     }
 
     /**
@@ -109,9 +108,31 @@ public class CollectionManager implements ICollManager {
         return collection.isEmpty();
     }
 
+    /**
+     * Удаляет из коллекции все элементы, которые меньше заданного шаблона.
+     * Использует естественный порядок сортировки Person (compareTo).
+     * @param template объект-шаблон для сравнения
+     * @return количество удаленных элементов
+     */
     @Override
     public int removeLower(Person template) {
-        return removeLowerKey(template.getId());
+        // Собираем ID элементов, которые нужно удалить
+        List<Integer> idsToRemove = new ArrayList<>();
+
+        for (Map.Entry<Integer, Person> entry : collection.entrySet()) {
+            // Используем ваш метод compareTo
+            // Если entry.getValue() (текущий) меньше template (заданного), то результат < 0
+            if (entry.getValue().compareTo(template) < 0) {
+                idsToRemove.add(entry.getKey());
+            }
+        }
+
+        // Удаляем собранные элементы
+        for (Integer id : idsToRemove) {
+            collection.remove(id);
+        }
+
+        return idsToRemove.size();
     }
 
     /**

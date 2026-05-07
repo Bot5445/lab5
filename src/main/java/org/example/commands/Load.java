@@ -1,11 +1,9 @@
 package org.example.commands;
 
-import org.example.data.CollectionManager;
 import org.example.data.IGetterSetter;
 import org.example.data.Person;
 import org.example.ioStorage.IStorage;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 

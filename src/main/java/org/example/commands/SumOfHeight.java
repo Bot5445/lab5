@@ -49,4 +49,13 @@ public class SumOfHeight implements ICommand{
     public String getDescription() {
         return "выводит сумму значений поля height для всех элементов коллекции";
     }
+
+    /**
+     * Команда sum_of_height не принимает аргументов
+     * @return выводит false
+     */
+    @Override
+    public boolean acceptsArguments() {
+        return false;
+    }
 }

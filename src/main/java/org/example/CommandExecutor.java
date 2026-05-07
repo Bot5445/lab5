@@ -55,11 +55,14 @@ public final class CommandExecutor {
 
         String args = (tokens.length > 1) ? tokens[1] : null;
 
+        if (!cmd.acceptsArguments() && args != null && !args.trim().isEmpty()) {
+            return "Ошибка: команда \"" + commandName + "\" не принимает аргументов.";
+        }
+
         PersonInputReader personReader = new PersonInputReader(scanner);
         if (cmd.requiresCompoundDataInput()) {
             // Ридер возвращает готовую CSV-строку. Мы просто подменяем аргументы.
             args = personReader.readPersonData(args);
-            //todo сделать передачу нач. аргумента и если нет то нач опрос с начала
         }
         return cmd.execute(args);
     }

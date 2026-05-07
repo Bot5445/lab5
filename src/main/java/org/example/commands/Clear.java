@@ -41,4 +41,13 @@ public class Clear implements ICommand {
     public String getDescription() {
         return "очищает коллекцию";
     }
+
+    /**
+     * Команда clear не принимает аргументов
+     * @return выводит false
+     */
+    @Override
+    public boolean acceptsArguments() {
+        return false;
+    }
 }

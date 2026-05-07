@@ -59,4 +59,13 @@ public class Info implements ICommand {
     public String getDescription() {
         return "выводит в стандартный поток вывода все элементы коллекции в строковом представлении";
     }
+
+    /**
+     * Команда info не принимает аргументов
+     * @return выводит false
+     */
+    @Override
+    public boolean acceptsArguments() {
+        return false;
+    }
 }

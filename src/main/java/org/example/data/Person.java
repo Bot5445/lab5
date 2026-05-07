@@ -15,7 +15,7 @@ import lombok.Setter;
  */
 @Getter
 @AllArgsConstructor
-public final class Person implements Serializable {
+public final class Person implements Serializable, Comparable<Person> {
     // @Id
     // @GeneratedValue(strategy = GenerationType.IDENTITY)
     /**
@@ -128,6 +128,20 @@ public final class Person implements Serializable {
         return Arrays.stream(arrays)
                 .flatMap(Arrays::stream)
                 .toArray(String[]::new);
+    }
+
+    /**
+     * @param o the object to be compared.
+     * @return
+     */
+    @Override
+    public int compareTo(Person o) {
+        int heighCompare = Long.compare(this.height, o.height);
+
+        if (heighCompare != 0) {
+            return heighCompare;
+        }
+        return Long.compare(this.id, o.id);
     }
 }
 

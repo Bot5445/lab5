@@ -35,4 +35,13 @@ public interface ICommand {
     default boolean requiresCompoundDataInput() {
         return false;
     }
+
+    /**
+     * Определяет, принимает ли команда аргументы (текст после названия команды).
+     * Если возвращает false, то при вводе любых аргументов будет выдана ошибка.
+     * По умолчанию true (аргументы разрешены).
+     */
+    default boolean acceptsArguments() {
+        return true;
+    }
 }

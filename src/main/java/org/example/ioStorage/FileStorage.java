@@ -17,7 +17,6 @@ import java.util.*;
 public class FileStorage implements IStorage {
 
     private String fileName;
-    private String filePath = "";
 
     /**
      * Устанавливает имя файла для хранилища.
@@ -52,21 +51,6 @@ public class FileStorage implements IStorage {
     }
 
     /**
-     * Устанавливает путь к файлу
-     *
-     * @param filePath путь к файлу
-     */
-    public void setFilePath(String filePath) {
-        filePath = filePath.trim();
-
-        if (!filePath.endsWith("/") && !filePath.endsWith("\\")) {
-            this.filePath = filePath + "/";
-        } else {
-            this.filePath = filePath;
-        }
-    }
-
-    /**
      * Загружает коллекцию объектов Person из CSV-файла.
      * Парсит файл построчно, игнорируя пустые строки.
      * Ошибки парсинга конкретных строк выводятся в стандартный поток ошибок (stderr).
@@ -81,8 +65,7 @@ public class FileStorage implements IStorage {
                 .withSeparator(',')
                 .build();
 
-        String fullPath = filePath + fileName;
-        try (Scanner scanner = new Scanner(new File(fullPath))) {
+        try (Scanner scanner = new Scanner(new File(fileName))) {
             StringJoiner errorString = new StringJoiner("\n");
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -98,7 +81,7 @@ public class FileStorage implements IStorage {
                 System.err.println(errorString);
             }
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("Файл данных не найден (" + fullPath + "). Коллекция пуста.", e);
+            throw new IllegalArgumentException("Файл данных не найден (" + fileName + "). Коллекция пуста.", e);
         } catch (IOException | ParseException e) {
             throw new IllegalArgumentException("Ошибка загрузки файла: " + e.getMessage());
         }
@@ -115,7 +98,7 @@ public class FileStorage implements IStorage {
     @Override
     public void save(Collection<Person> persons) throws IOException {
         try (
-                BufferedOutputStream bufferOut = new BufferedOutputStream(new FileOutputStream(filePath + fileName))
+                BufferedOutputStream bufferOut = new BufferedOutputStream(new FileOutputStream(fileName))
         ) {
             for (Person entry : persons) {
                 String row = entry.toString() + "\n";

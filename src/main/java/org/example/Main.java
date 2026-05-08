@@ -27,18 +27,21 @@ public class Main {
      * @param args аргументы командной строки (не используются)
      */
     public static void main(String[] args) {
-
         //переменная окружения
-        FileStorage storageClass = new FileStorage( "file.csv");
         String filePath = System.getenv("LAB5_FILE");
-        if (!(filePath == null || filePath.isBlank())) storageClass.setFilePath(filePath);
-
-        IStorage storage = storageClass;
-        ICollManager collManager = new CollectionManager();
+        IStorage storage;
+        if (!(filePath == null || filePath.isBlank()))
+            storage = new FileStorage(filePath);
+        else {
+            storage = null;
+            System.out.println("Переменная окружения не задана.\n !!Необходима задать переменную окружения для работы с программой!!");
+            System.exit(0);
+        }
 
         Scanner scanner = new Scanner(System.in);
         CommandExecutor executor = new CommandExecutor(commands, scanner);
 
+        ICollManager collManager = new CollectionManager();
         ICommand[] cmds = new ICommand[] {
                 new Show(collManager),
                 new Info(collManager),

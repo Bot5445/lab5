@@ -12,6 +12,7 @@ import java.util.List;
 public interface IStorage {
     /**
      * Загружает коллекцию из источника.
+     *
      * @return список загруженных объектов {@link Person}
      * @throws IOException при ошибке чтения
      */
@@ -19,6 +20,7 @@ public interface IStorage {
 
     /**
      * Сохраняет коллекцию в источник.
+     *
      * @param persons коллекция объектов для сохранения
      * @throws IOException при ошибке записи
      */
@@ -26,6 +28,7 @@ public interface IStorage {
 
     /**
      * Устанавливает имя файла (или пути) для операций ввода-вывода.
+     *
      * @param fileName новое имя файла
      */
     void setFileName(String fileName);

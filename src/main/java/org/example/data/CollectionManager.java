@@ -23,6 +23,7 @@ public class CollectionManager implements ICollManager {
     /**
      * Добавляет объект Person в коллекцию. Ключом становится ID объекта.
      * Если объект с таким ID уже существует, он будет перезаписан.
+     *
      * @param person объект для добавления
      */
     @Override
@@ -32,6 +33,7 @@ public class CollectionManager implements ICollManager {
 
     /**
      * Удаляет объект из коллекции по его ID.
+     *
      * @param id ID объекта для удаления
      */
     @Override
@@ -41,13 +43,14 @@ public class CollectionManager implements ICollManager {
 
     /**
      * Заменяет старый объект с указанным ID на новый.
-     * @param id ID заменяемого элемента
+     *
+     * @param id     ID заменяемого элемента
      * @param person новый объект Person
      * @throws IllegalArgumentException если элемента с таким ID нет в коллекции
      */
     @Override
     public void updatePerson(Integer id, Person person) {
-        if (collection.containsKey(id)){
+        if (collection.containsKey(id)) {
             collection.remove(id);
             collection.put(id, person);
         } else {
@@ -111,6 +114,7 @@ public class CollectionManager implements ICollManager {
     /**
      * Удаляет из коллекции все элементы, которые меньше заданного шаблона.
      * Использует естественный порядок сортировки Person (compareTo).
+     *
      * @param template объект-шаблон для сравнения
      * @return количество удаленных элементов
      */
@@ -137,6 +141,7 @@ public class CollectionManager implements ICollManager {
 
     /**
      * Удаляет все элементы коллекции, ключ (ID) которых меньше переданного порогового значения.
+     *
      * @param thresholdId пороговый ID
      * @return количество удаленных элементов
      */

@@ -21,7 +21,9 @@ public class Save implements ICommand{
     }
 
     /**
-     * @return название
+     * Возвращает название команды.
+     *
+     * @return строка "save"
      */
     @Override
     public String getName() {

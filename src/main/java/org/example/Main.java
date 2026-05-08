@@ -7,7 +7,6 @@ import org.example.data.CollectionManager;
 import org.example.ioStorage.FileStorage;
 import org.example.ioStorage.IStorage;
 
-
 import java.util.*;
 
 /**
@@ -24,25 +23,39 @@ public class Main {
     /**
      * Точка входа в приложение.
      * Создает менеджер коллекции, настраивает хранилище, регистрирует команды и запускает консольный интерфейс.
+     *
      * @param args аргументы командной строки (не используются)
      */
     public static void main(String[] args) {
         //переменная окружения
         String filePath = System.getenv("LAB5_FILE");
         IStorage storage;
-        if (!(filePath == null || filePath.isBlank()))
-            storage = new FileStorage(filePath);
-        else {
+        ICollManager collManager = new CollectionManager();
+        if (!(filePath == null || filePath.isBlank())){
+            if (filePath.endsWith(".csv")) storage = new FileStorage(filePath);
+            else {
+                storage = null;
+                System.out.println("В переменной окружения не задано расширение файла \".csv\"");
+                System.exit(0);
+            }
+        } else {
             storage = null;
             System.out.println("Переменная окружения не задана.\n !!Необходима задать переменную окружения для работы с программой!!");
+            System.exit(0);
+        }
+
+        //загрузка данных из файла перед работой
+        try {
+            System.out.print(new Load(collManager, storage).execute(null));
+        } catch (Exception e) {
+            System.out.println("Внимание: не удалось загрузить данные — " + e.getMessage());
             System.exit(0);
         }
 
         Scanner scanner = new Scanner(System.in);
         CommandExecutor executor = new CommandExecutor(commands, scanner);
 
-        ICollManager collManager = new CollectionManager();
-        ICommand[] cmds = new ICommand[] {
+        ICommand[] cmds = new ICommand[]{
                 new Show(collManager),
                 new Info(collManager),
                 new Insert(collManager),
@@ -50,7 +63,6 @@ public class Main {
                 new RemoveKey(collManager),
                 new Clear(collManager),
                 new Save(collManager, storage),
-                new Exit(),
                 new SumOfHeight(collManager),
                 new FilterContainsPassportID(collManager),
                 new FilterStartsWithName(collManager),
@@ -60,21 +72,14 @@ public class Main {
                 new RemoveLowerKey(collManager),
                 new ReplaceIfGreater(collManager),
                 new Help(commands),
-                new Load(collManager, storage)
+                new Exit(),
         };
         for (ICommand cmd : cmds) commands.put(cmd.getName(), cmd);
 
-        //загрузка данных из файла перед работой
-        try {
-            System.out.print(new Load(collManager, storage).execute(null));
-        } catch (Exception e) {
-            System.out.println("Внимание: не удалось загрузить данные — " + e.getMessage());
-            System.out.println("Начинаем с пустой коллекцией.");
-        }
 
         boolean exit = false;
 
-        while(!exit){
+        while (!exit) {
             System.out.print("> ");
 
             if (!scanner.hasNextLine()) {// Проверка на (Ctrl+D / Ctrl+Z)
@@ -93,8 +98,7 @@ public class Main {
                 } else {
                     System.out.println(strOutput);
                 }
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("Ошибка данных: " + e.getMessage());
             } catch (Exception e) {
                 System.out.println("Критическая ошибка: " + e.getMessage());

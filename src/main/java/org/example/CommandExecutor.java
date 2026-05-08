@@ -11,12 +11,13 @@ import java.util.Scanner;
  */
 public final class CommandExecutor {
     private final Map<String, ICommand> commands;
-    private  final Scanner scanner;
+    private final Scanner scanner;
 
     /**
      * Создает экземпляр исполнителя команд.
+     *
      * @param commands отображение названий команд (ключ) на их реализации (значение)
-     * @param scanner сканер для чтения ввода из консоли (используется для интерактивного опроса)
+     * @param scanner  сканер для чтения ввода из консоли (используется для интерактивного опроса)
      */
     public CommandExecutor(Map<String, ICommand> commands, Scanner scanner) {
         this.commands = commands;
@@ -27,6 +28,7 @@ public final class CommandExecutor {
      * Выполняет команду по строке ввода.
      * Разбирает строку, находит соответствующую команду в реестре и запускает её выполнение.
      * При этом производится очистка ввода от лишних пробелов и управляющих символов.
+     *
      * @param input строка из консоли, содержащая имя команды и аргументы
      * @return результат выполнения команды, сообщение об ошибке или null, если ввод пустой
      * @throws Exception если произошла ошибка при выполнении команды или при интерактивном вводе данных
@@ -39,8 +41,8 @@ public final class CommandExecutor {
         // Они могут возникнуть при копировании или ошибках ввода.
         //"\\s+" Заменяем множество пробелов на один и убираем пробелы по краям
         String cleanInput = input.replaceAll("\\p{Cntrl}", " ")
-                                .trim()
-                                .replaceAll("\\s+", " ");
+                .trim()
+                .replaceAll("\\s+", " ");
         if (cleanInput.isEmpty()) return null;
 
         // "\\s+" разбивает по пробелам, игнорируя их количество.

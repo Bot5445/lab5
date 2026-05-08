@@ -46,8 +46,8 @@ public class FileStorage implements IStorage {
      * @param fileCSV имя файла без расширения
      */
     public FileStorage(String fileCSV) {
-        if (fileCSV.endsWith(".csv")) fileName = fileCSV;
-        else fileName = fileCSV + ".csv";
+        fileName = fileCSV;
+
     }
 
     /**
@@ -81,7 +81,7 @@ public class FileStorage implements IStorage {
                 System.err.println(errorString);
             }
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("Файл данных не найден (" + fileName + "). Коллекция пуста.", e);
+            throw new IllegalArgumentException("Файл данных не найден (" + fileName + ").", e);
         } catch (IOException | ParseException e) {
             throw new IllegalArgumentException("Ошибка загрузки файла: " + e.getMessage());
         }

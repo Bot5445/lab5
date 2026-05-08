@@ -2,7 +2,7 @@
   <artifact type="jar" name="lab5:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/lab5_jar</output-path>
     <root id="archive" name="lab5.jar">
-      <element id="module-output" name="lab5" />
+      <element id="module-output" name="lab5-8" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/de/vandermeer/ascii-utf-themes/0.0.1/ascii-utf-themes-0.0.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/de/vandermeer/asciitable/0.3.2/asciitable-0.3.2.jar" path-in-jar="/" />
